@@ -10,6 +10,7 @@ import com.springtuto.restapi.exceptions.EmployeeNotCorrectException;
 import com.springtuto.restapi.exceptions.EmployeeNotFoundException;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,7 +37,7 @@ class EmployeeController {
 
     // Aggregate root
 
-    @GetMapping("/employees")
+    @GetMapping(value = "/employees", produces = MediaType.APPLICATION_JSON_VALUE)
     Resources<Resource<Employee>> all() {
 
         List<Resource<Employee>> employees = repository.findAll().stream()
@@ -49,7 +50,7 @@ class EmployeeController {
 
     // Single item
 
-    @GetMapping("/employees/{id}")
+    @GetMapping(value="/employees/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     Resource<Employee> one(@PathVariable Long id) {
 
         Employee employee = repository.findById(id)
@@ -60,15 +61,15 @@ class EmployeeController {
 
     @PostMapping("/employees")
     ResponseEntity<?> newEmployee(@RequestBody Employee newEmployee) throws URISyntaxException {
-        if (verifyEmployee(newEmployee)) {
+        /*if (verifyEmployee(newEmployee)) {*/
             Resource<Employee> resource = assembler.toResource(repository.save(newEmployee));
 
             return ResponseEntity
                     .created(new URI(resource.getId().expand().getHref()))
                     .body(resource);
-        } else {
+        /*} else {
             throw new EmployeeNotCorrectException(listeAttribute(newEmployee));
-        }
+        }*/
     }
 
     @PutMapping("/employees/{id}")
@@ -81,12 +82,12 @@ class EmployeeController {
                     return repository.save(employee);
                 })
                 .orElseGet(() -> {
-                    if (verifyEmployee(newEmployee)) {
+                    //if (verifyEmployee(newEmployee)) {
                         newEmployee.setId(id);
                         return repository.save(newEmployee);
-                    } else {
+                    /*} else {
                         throw new EmployeeNotCorrectException(listeAttribute(newEmployee));
-                    }
+                    }*/
                 });
 
         Resource<Employee> resource = assembler.toResource(updatedEmployee);
